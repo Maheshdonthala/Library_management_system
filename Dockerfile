@@ -2,9 +2,10 @@
 
 # Build stage
 FROM maven:3.8.8-eclipse-temurin-17 AS build
+# Use the Maven image's installed mvn. Do not rely on the repo containing the Maven wrapper.
 WORKDIR /workspace
-COPY pom.xml mvnw .mvn/ ./
-COPY .mvn/ .mvn/
+# Copy only the POM and source tree. The builder image already has Maven installed.
+COPY pom.xml ./
 # copy sources
 COPY src ./src
 # package
