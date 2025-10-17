@@ -16,5 +16,7 @@ FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 ARG JAR_FILE=target/*.jar
 COPY --from=build /workspace/target/*.jar app.jar
-ENV JAVA_OPTS="-Xms256m -Xmx512m -Dcom.mongodb.dns.resolver=dnsjava"
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
+# Pass the MongoDB DNS resolver explicitly as a JVM argument in the exec form
+# to avoid shell quoting/expansion issues that can prevent the driver from
+# seeing the property in some container environments.
+ENTRYPOINT ["java", "-Dcom.mongodb.dns.resolver=dnsjava", "-Xms256m", "-Xmx512m", "-jar", "/app/app.jar"]
