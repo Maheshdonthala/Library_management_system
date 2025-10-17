@@ -1,0 +1,21 @@
+# render.yaml - Render service configuration (Docker web service)
+# See https://render.com/docs/deploy-rails for reference; adjust fields as needed.
+services:
+  - type: web
+    name: librarysystem
+    env: docker
+    # If you want Render to build from Dockerfile in root, leave buildCommand empty.
+    # Optional: specify the Dockerfile path or docker build context
+    dockerfilePath: Dockerfile
+    # Instance plan: free, starter, standard, etc. Use "free" for testing on free tier
+    plan: free
+    # Auto-deploy from branch (set to your default branch)
+    branch: main
+    # Health check path (optional). Render expects 200 OK
+    healthCheckPath: /actuator/health
+    # Env vars can be set in the Render dashboard; do not commit secrets here.
+    envVars:
+      - key: MONGODB_URI
+        value: "${MONGODB_URI}"
+      - key: PORT
+        value: "${PORT:8080}"

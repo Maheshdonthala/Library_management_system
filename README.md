@@ -100,6 +100,26 @@ This is a Java Spring Boot backend that serves server-side rendered pages and JS
 4. Add environment variables in Render -> Environment -> Add `MONGODB_URI` with your Atlas URI.
 5. Deploy — Render will build the image and run the container. The service will use the `PORT` environment variable automatically.
 
+Render-specific notes
+---------------------
+
+- This repository includes a `Dockerfile`, a `Procfile` (for non-docker or quick runs) and a `render.yaml` manifest that you can use to configure the Render service declaratively.
+- In the Render dashboard set the `MONGODB_URI` environment variable to your MongoDB connection string (Atlas or other). Do NOT commit secrets to repo.
+- Render provides a `PORT` environment variable; the app already reads `server.port` from `PORT` in `application.properties`.
+
+If you'd like to deploy from the command line via Render's CLI, the high-level flow is:
+
+1. Push your repo to GitHub.
+2. Create a new Web Service on Render and connect the GitHub repo. Choose Docker for the environment and the `main` branch.
+3. Set `MONGODB_URI` in the service's Environment settings.
+4. Trigger deploy or push to `main` to let Render build the Docker image and start your service.
+
+Advanced: if you prefer Render's native build (without Docker), you can configure the service to use a Maven build command (`mvn -DskipTests package`) and set the Start Command to the same as the Procfile:
+
+	java -jar target/librarysystem-0.0.1-SNAPSHOT.jar
+
+But the Docker route is recommended because it reproduces your local environment precisely.
+
 ### Quick Google Cloud Run (container) deployment
 
 1. Build and push the Docker image to Google Container Registry or Artifact Registry.
