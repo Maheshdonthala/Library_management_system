@@ -18,9 +18,13 @@ public class StartupLogger {
     @EventListener(ApplicationReadyEvent.class)
     public void onReady() {
         if (mongoUri != null) {
-            // redact credentials if present
-            String redacted = mongoUri.replaceAll("(mongodb\+srv:\/\/)([^@]+)@", "$1REDACTED@");
-            redacted = redacted.replaceAll("(mongodb:\/\/)([^@]+)@", "$1REDACTED@");
+            // redact credentials if present by replacing userinfo between :// and @ with REDACTED
+            String redacted = mongoUri;
+            int schemeEnd = redacted.indexOf("://");
+            int atIndex = redacted.indexOf('@');
+            if (schemeEnd != -1 && atIndex != -1 && atIndex > schemeEnd) {
+                redacted = redacted.substring(0, schemeEnd + 3) + "REDACTED@" + redacted.substring(atIndex + 1);
+            }
             logger.info("Effective spring.data.mongodb.uri (redacted): {}", redacted);
         } else {
             logger.info("spring.data.mongodb.uri is not set; using default");
