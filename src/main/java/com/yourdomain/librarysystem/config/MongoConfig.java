@@ -3,6 +3,8 @@ package com.yourdomain.librarysystem.config;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 @Configuration
 public class MongoConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(MongoConfig.class);
+
     @Value("${spring.data.mongodb.uri}")
     private String mongoUri;
 
@@ -34,7 +38,7 @@ public class MongoConfig {
                 uri = convertSrvToStandard(uri);
             } catch (Exception e) {
                 // If conversion fails, log and fall back to original URI so startup still proceeds
-                System.err.println("Failed to convert mongodb+srv URI to standard form: " + e.getMessage());
+                logger.warn("Failed to convert mongodb+srv URI to standard form: {}", e.getMessage());
             }
         }
         return MongoClients.create(new ConnectionString(uri));
@@ -163,7 +167,7 @@ public class MongoConfig {
         }
 
         String converted = sb.toString();
-        System.out.println("Converted SRV URI to standard URI: " + converted);
+        logger.info("Converted SRV URI to standard URI: {}", converted);
         return converted;
     }
 }
